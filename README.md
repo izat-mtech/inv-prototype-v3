@@ -27,6 +27,8 @@ In a transaction tab, select a reference to review or act on it. Try the pending
 4. As **Supervisor**, approve the transfer. As the **Kuching Store Officer**, confirm dispatch. Switch to the **Miri Store Officer** to confirm arrival.
 5. Return to Dashboard or Inventory. Miri now has 38 kg, and its low-stock alert clears. The **Manager** profile can view and export but cannot change stock.
 
+When you switch to a Store Officer with a transfer to confirm, the notice at the top links to the transfer. It shows dispatches for the source city and outstanding receipts for the destination city.
+
 A supervisor can set minimum stock by species and city. Expiry alerts cover available batches within three days of the entered expiry date. **Needs Action** links to late reviews, incomplete transfers, inspection holds, spoilage and count discrepancies.
 
 Stock Receive supports accepted, held and rejected weights. Held and accepted stock post on approval. Rejected weights stay on the receipt. The Supervisor can release inspection holds or record them as spoilage. Open a transaction to print an individual slip. Open an Inventory batch to generate and print its QR label. QR links use the deployed site and open a batch where its record exists in that browser.

@@ -291,3 +291,16 @@ textarea { resize: vertical; }
   .print-document table { margin-top: 8pt; }
   .print-document .batch-label { border-color: #444; }
 }
+
+.transfer-notice-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.transfer-notice { margin-bottom: 16px; border: 1px solid #c4d9ca; border-radius: 9px; background: #edf5ee; color: #294b3a; }
+.transfer-notice-heading { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; padding: 10px 13px 5px; }
+.transfer-notice-heading h2 { font-size: .95rem; }
+.transfer-notice-heading button { font-size: .79rem; }
+.transfer-notice ul { margin: 0; padding: 0; list-style: none; }
+.transfer-notice li { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 15px; align-items: center; padding: 9px 13px; }
+.transfer-notice li + li { border-top: 1px solid #d9e7db; }
+.transfer-notice strong, .transfer-notice small { display: block; line-height: 1.4; }
+.transfer-notice strong { font-size: .84rem; }
+.transfer-notice small { margin-top: 2px; color: #4e6858; font-size: .75rem; }
+.transfer-notice .secondary { padding: 6px 10px; min-height: 32px; }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Dashboard, Inventory } from './StockViews'
 import { TransactionDetail, TransactionPage } from './Transactions'
 import { Reports } from './Reports'
+import { TransferNotice } from './TransferNotice'
 import { Approvals, AuditTrail } from './Oversight'
 import { Stocktaking, StocktakeDetail } from './StocktakingView'
 import { apply, kg, locations, reference, revise, submit } from './inventory'
@@ -62,6 +63,7 @@ export default function App() {
   const [dashboardCity, setDashboardCity] = useState(() => readRoute().location)
   const [selected, setSelected] = useState<RecordTarget | undefined>(() => readRoute().selected)
   const [message, setMessage] = useState('')
+  const [transferNoticeDismissed, setTransferNoticeDismissed] = useState(false)
   const profileMenu = useRef<HTMLDetailsElement>(null)
   useEffect(() => {
     const onHash = () => {
@@ -137,7 +139,9 @@ export default function App() {
   function switchProfile(next: ProfileId) {
     if (next !== profileId) log('Switched demo profile', profile.name + ' → ' + profiles[next].name, profile.city || profiles[next].city || undefined)
     setProfileId(next)
+    setTransferNoticeDismissed(false)
     setMessage('')
+    window.scrollTo(0, 0)
     close()
     if (profileMenu.current) profileMenu.current.open = false
   }
@@ -145,6 +149,7 @@ export default function App() {
     if (!window.confirm('Reset the fictional transactions and counts in this browser?')) return
     setWorkspace(resetWorkspace(role))
     setProfileId('kuching')
+    setTransferNoticeDismissed(false)
     close()
     setMessage('Demo data reset.')
     if (profileMenu.current) profileMenu.current.open = false
@@ -193,6 +198,7 @@ export default function App() {
       <div className="topbar"><span>Fish Inventory <span className="crumb">/ {screen.label}</span></span><span className="demo-tag"><i />Prototype</span></div>
       <div className="content">
         <div className="notice no-print" role="status">{message}</div>
+        <TransferNotice data={data} profile={profile} dismissed={transferNoticeDismissed} onDismiss={() => setTransferNoticeDismissed(true)} />
         {tab === 'dashboard' && <Dashboard data={data} sheets={sheets} location={dashboardCity} rules={workspace.rules} onRule={role === 'Supervisor' ? saveRule : undefined}
           onLocation={setDashboardCity} onOpen={open} />}
         {tab === 'inventory' && <Inventory key={scopeKey} initialLocation={location} initialFish={route.fish} initialBatch={route.batch} destination={route.destination}
