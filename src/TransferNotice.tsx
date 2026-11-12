@@ -3,16 +3,19 @@ import type { Transaction } from './inventory'
 import { mayAct } from './profiles'
 import type { Profile } from './profiles'
 
-export function TransferNotice({ data, profile, dismissed, onDismiss }: {
-  data: Transaction[]; profile: Profile; dismissed: boolean; onDismiss: () => void
-}) {
-  const reminders = dismissed || profile.role !== 'Store Officer' ? [] : data.slice().reverse().flatMap(record => {
+export function getTransferReminders(data: Transaction[], profile: Profile) {
+  if (profile.role !== 'Store Officer') return []
+  return data.slice().reverse().flatMap(record => {
     if (record.kind !== 'transfer') return []
     const action = commands(record, profile.role).find(command =>
       (command === 'dispatch' || command === 'receive') && mayAct(profile, record, command))
-    if (!action) return []
-    return [{ record, action }]
+    return action ? [{ record, action }] : []
   })
+}
+
+export function TransferNotice({ reminders, onDismiss }: {
+  reminders: ReturnType<typeof getTransferReminders>; onDismiss: () => void
+}) {
   const count = reminders.length
   const title = count ? count + (count === 1 ? ' transfer to confirm' : ' transfers to confirm') : ''
   return <div className="no-print">

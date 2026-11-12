@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Dashboard, Inventory } from './StockViews'
 import { TransactionDetail, TransactionPage } from './Transactions'
 import { Reports } from './Reports'
-import { TransferNotice } from './TransferNotice'
+import { getTransferReminders, TransferNotice } from './TransferNotice'
 import { Approvals, AuditTrail } from './Oversight'
 import { Stocktaking, StocktakeDetail } from './StocktakingView'
 import { apply, kg, locations, reference, revise, submit } from './inventory'
@@ -167,6 +167,7 @@ export default function App() {
   const openCount = (id: number) => setSelected({ type: 'count', id })
   const stockPending = sheets.filter(sheet => sheet.status === 'Pending review').length
   const txnPending = data.filter(t => t.status === 'Pending review')
+  const transferReminders = getTransferReminders(data, profile)
 
   return <div className="app">
     <aside className="sidebar">
@@ -184,11 +185,15 @@ export default function App() {
       </details>
       <nav aria-label="Main navigation">
         {tabs.map(item => {
-          const count = item.id === 'approvals' ? txnPending.length + stockPending : item.id === 'stocktaking' ? stockPending :
-            txnPending.filter(t => kindTab[t.kind] === item.id).length
+          let count = item.id === 'stock-transfer' ? transferReminders.length : 0
+          if (role === 'Supervisor') {
+            count = item.id === 'approvals' ? txnPending.length + stockPending : item.id === 'stocktaking' ? stockPending :
+              txnPending.filter(t => kindTab[t.kind] === item.id).length
+          }
+          const countLabel = count + (role === 'Supervisor' ? ' pending' : ' to confirm')
           return <a key={item.id} href={'#' + item.id} aria-current={tab === item.id ? 'page' : undefined}>
             <span className={'nav-icon ' + item.icon} aria-hidden="true" />{item.label}
-            {count > 0 && role === 'Supervisor' && <span className="nav-count" aria-label={count + ' pending'}>{count}</span>}
+            {count > 0 && <span className="nav-count" aria-label={countLabel}>{count}</span>}
           </a>
         })}
       </nav>
@@ -198,7 +203,7 @@ export default function App() {
       <div className="topbar"><span>Fish Inventory <span className="crumb">/ {screen.label}</span></span><span className="demo-tag"><i />Prototype</span></div>
       <div className="content">
         <div className="notice no-print" role="status">{message}</div>
-        <TransferNotice data={data} profile={profile} dismissed={transferNoticeDismissed} onDismiss={() => setTransferNoticeDismissed(true)} />
+        <TransferNotice reminders={transferNoticeDismissed ? [] : transferReminders} onDismiss={() => setTransferNoticeDismissed(true)} />
         {tab === 'dashboard' && <Dashboard data={data} sheets={sheets} location={dashboardCity} rules={workspace.rules} onRule={role === 'Supervisor' ? saveRule : undefined}
           onLocation={setDashboardCity} onOpen={open} />}
         {tab === 'inventory' && <Inventory key={scopeKey} initialLocation={location} initialFish={route.fish} initialBatch={route.batch} destination={route.destination}
